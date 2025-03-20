@@ -2,7 +2,7 @@ name: Build and push Docker image to dockerhub
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
     
 jobs:
 
@@ -19,10 +19,13 @@ jobs:
       with:
        username: ${{ secrets.DOCKERHUB_USERNAME }}
        password: ${{ secrets.DOCKERHUB_TOKEN }}
+       
+    - name: Extract short commit hash
+      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Build and push to dockerhub
       uses: docker/build-push-action@v5
       with:
-       context:
+       context: './task2'
        push: true
-       tags: kicsipixel/githubaction:latest
+       tags: ${{ secrets.DOCKERHUB_USERNAME }}/flask-calculator:latest, ${{ secrets.DOCKERHUB_USERNAME }}/flask-calculator:${{ env.SHORT_SHA }}

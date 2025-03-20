@@ -47,6 +47,9 @@ HTML_TEMPLATE = """
 </html>
 """
 
+import signal
+import sys
+
 @app.route('/')
 def home():
     return render_template_string(HTML_TEMPLATE)
@@ -71,5 +74,12 @@ def calculate():
         
     return jsonify({'result': result})
 
+def handle_shutdown_signal(signum, frame):
+    print("Received shutdown signal. Cleaning up...")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, handle_shutdown_signal)
+signal.signal(signal.SIGINT, handle_shutdown_signal)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8080)
